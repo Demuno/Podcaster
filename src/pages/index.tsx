@@ -5,9 +5,14 @@ import { api } from "../services/api";
 import { convertDurationToTimeString } from "../utils/convertDurationToTimeString";
 
 type Episode = {
-    id: string,
-    title: string,
-    members: string;
+  id: string;
+  title: string;
+  thumbnail: string;
+  members: string;
+  publishedAt: string;
+  duration: number;
+  durationAsString: string;
+  url: string;
 }
 
 type HomeProps = {
