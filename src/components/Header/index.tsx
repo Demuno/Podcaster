@@ -12,7 +12,7 @@ export default function Header() {
     <header className={styles.headerContainer}>
       <img src="/logo.svg" alt="podcastr-logo" />
 
-      <p>Ouça sempre que tiver vontade, quando e onde você quiser!!</p>
+      <p>Podcast para qualquer momento</p>
 
       <span>{currentDate}</span>
     </header>
