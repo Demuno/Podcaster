@@ -1,11 +1,15 @@
-import { GetStaticProps } from "next";
-import { useRouter } from "next/router"
-import { api } from "../../services/api";
-
 import { format, parseISO } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
+import Link from 'next/link'
+import { useRouter } from 'next/router';
+import { GetStaticPaths, GetStaticProps } from "next";
+import { api } from '../../services/api';
+import Image from "next/image"
+
 
 import { convertDurationToTimeString } from "../../utils/convertDurationToTimeString";
+
+import styles from "./episode.module.scss";
 
 type Episode = {
   id: string;
@@ -16,18 +20,68 @@ type Episode = {
   duration: number;
   durationAs: string;
   url: string;
+  description: string;
 }
 
-// type EpisodeProps = {
-//   episode:
-// }
+type EpisodeProps = {
+  episode: Episode;
+}
 
-export default function Episode() {
-  const router = useRouter();
-
+export default function Episode({ episode }: EpisodeProps) {
   return (
-    <h1>{router.query.slug}</h1>
+    <div className={styles.episode}>
+      <div className={styles.thumbnailContainer}>
+        <Link href="/">
+        <button type="button">
+          <img src="/arrow-left.svg" alt="Voltar" />
+        </button>
+        </Link>
+        <Image
+        width={700}
+        height={170}
+        src={episode.thumbnail}
+        objectFit="cover"
+        />
+        <button type="button"> 
+          <img src="/play.svg" alt="Tocar episódio" />
+        </button>
+      </div>
+
+      <header>
+        <h1>{episode.title}</h1>
+        <span>{episode.members}</span>
+        <span>{episode.publishedAt}</span>
+        <span>{episode.durationAs}</span>
+      </header>
+
+      <div className={styles.description}
+      dangerouslySetInnerHTML={{  __html: episode.description }}
+      />
+      </div>
   )
+}
+
+export const getStaticPaths: GetStaticPaths =async () => {
+  const { data } = await api.get('episodes', {
+    params: {
+      _Limit: 2,
+      _sort: 'published_at',
+      _order: 'desc'
+    }
+  })
+
+  const paths = data.map(episode => {
+    return {
+      params: {
+        slug: episode.id
+      }
+    }
+  })
+
+  return {
+    paths,
+    fallback: 'blocking'
+  }
 }
 
 export const getStaticProps: GetStaticProps =async (ctx) => {
