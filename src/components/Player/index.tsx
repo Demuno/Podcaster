@@ -14,12 +14,23 @@ export default function Player() {
     episodeList, 
     currentEpisodeIndex, 
     isPlaying, 
-    togglePlay 
+    togglePlay,
+    setPlayingState
   } = useContext(PlayerContext)
 
-  useEffect(() => {}, [])
-
   const episode = episodeList[currentEpisodeIndex]
+
+  useEffect(() => {
+    if (!audioRef.current) {
+      return;
+    } 
+    
+    if (isPlaying) {
+      audioRef.current.play();
+    } else {
+      audioRef.current.pause();
+    }
+  }, [isPlaying])
 
 
   return (
@@ -66,6 +77,8 @@ export default function Player() {
           src={episode.url} 
           ref={audioRef}
           autoPlay
+          onPlay={() => setPlayingState(true)}
+          onPause={() => setPlayingState(false)}
           />
         )}
 
@@ -82,10 +95,11 @@ export default function Player() {
             disabled={!episode}
             onClick={togglePlay}
             >
-            { isPlaying 
-            ? <img src="/pause.svg" alt="Pausar" /> 
-            : <img src="/play.svg" alt="Tocar" />
-          }
+            { isPlaying ? (
+              <img src="/pause.svg" alt="Pausar"/>
+            ): (
+              <img src="/play.svg" alt="Tocar"/>
+            )}
             </button>
             <button type='button' disabled={!episode}>
             <img src="/play-next.svg" alt="Tocar proxima" />
